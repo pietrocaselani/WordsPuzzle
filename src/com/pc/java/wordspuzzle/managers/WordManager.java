@@ -1,5 +1,7 @@
 package com.pc.java.wordspuzzle.managers;
 
+import com.pc.java.wordspuzzle.exceptions.InvalidWordException;
+
 import java.util.ArrayList;
 
 /**
@@ -44,7 +46,9 @@ public final class WordManager {
         return mCurrentWords;
     }
 
-    public void registerWord(String word) {
+    public void registerWord(String word) throws InvalidWordException {
+        if (word.length() != 3 && word.length() != 4) throw new InvalidWordException();
+
         getWords().add(word);
         //TODO apagar o json e salvar again
     }
@@ -60,8 +64,6 @@ public final class WordManager {
             }
             //TODO apagar o json e salvar again
         }
-
-        //TODO apagar o json e salvar again
     }
     //endregion
 }
