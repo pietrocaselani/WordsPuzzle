@@ -43,4 +43,8 @@ public class Player {
         mPoints = points;
     }
     //endregion
+
+    @Override public String toString() {
+        return "Nome: " + mName + " - Pontos: " + mPoints;
+    }
 }

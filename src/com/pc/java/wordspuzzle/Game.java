@@ -31,13 +31,19 @@ public class Game {
 
     //region Public methods
     public void newGame(GameMode gameMode, Player player1, Player player2, ArrayList<String> words) {
-        if (gameMode == MULTI && player2 == null) {
+        if (player1 == null) {
+            throw new RuntimeException("Player 1 can't be null");
+        } else if (gameMode == MULTI && player2 == null) {
             throw new RuntimeException("Multi player, second player can't be null");
         } else if (gameMode == SINGLE && player2 != null) {
             throw new RuntimeException("Single player, second player must be null");
         }
 
+        Utils.clearScreen();
 
+        String message = "Novo jogo com " + player1.getName() + " vs " + (player2 == null ? " PC " : player2.getName());
+
+        System.out.println(message);
     }
     //endregion
 

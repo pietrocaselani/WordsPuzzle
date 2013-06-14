@@ -65,5 +65,14 @@ public final class WordManager {
             //TODO apagar o json e salvar again
         }
     }
+
+    public boolean containsWord(String word) {
+        ArrayList<String> words = getWords();
+        for (String w : words) {
+            if (w.equalsIgnoreCase(word)) return true;
+        }
+
+        return false;
+    }
     //endregion
 }
