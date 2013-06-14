@@ -55,6 +55,7 @@ public class Menu {
         System.out.println("8 - Novo jogo;");
         System.out.print("Digite uma opção: ");
         int option = mScanner.nextInt();
+        mScanner.nextLine();
         switch (option) {
             case 1:
                 showPlayers();
@@ -175,11 +176,12 @@ public class Menu {
         System.out.print("\n\nJogadores:\n");
         ArrayList<Player> players = PlayerManager.getInstance().getPlayers();
         for (int i = 0 ; i < players.size(); i++) {
-            System.out.print(String.format("%d - %s", i + 1, players.get(i).getName()));
+            System.out.println(String.format("%d - %s", i + 1, players.get(i).getName()));
         }
 
         System.out.print("\n\nSelecione o número do jogador para excluir: ");
         int index = mScanner.nextInt();
+        index--;
         if (index < 0 || index >= players.size()) {
             Utils.clearScreen();
             System.out.print("\n\n******** Digite um número válido! ********\n\n");

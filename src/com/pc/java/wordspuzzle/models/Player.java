@@ -1,5 +1,8 @@
 package com.pc.java.wordspuzzle.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by Pietro Caselani
  * On 13/06/13
@@ -7,20 +10,16 @@ package com.pc.java.wordspuzzle.models;
  */
 public class Player {
     //region Fields
-    private String mName;
-    private int mPoints;
+    @JsonProperty("name") private String mName;
+    @JsonProperty("points") private int mPoints;
     //endregion
 
     //region Constructors
-    public Player() {
-        this(null);
-    }
-
     public Player(String name) {
         this(name, 0);
     }
 
-    public Player(String name, int points) {
+    @JsonCreator public Player(@JsonProperty("name") String name, @JsonProperty("points") int points) {
         mName = name;
         mPoints = points;
     }

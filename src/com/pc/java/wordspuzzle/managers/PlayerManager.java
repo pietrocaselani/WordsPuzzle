@@ -1,8 +1,13 @@
 package com.pc.java.wordspuzzle.managers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pc.java.wordspuzzle.models.Player;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Pietro Caselani
@@ -11,6 +16,7 @@ import java.util.ArrayList;
  */
 public final class PlayerManager {
     //region Fields
+    private static final File JSON_FILE = new File("players.json");
     private static PlayerManager sInstance;
     private ArrayList<Player> mPlayers;
     private Player mCurrentPlayer;
@@ -28,7 +34,16 @@ public final class PlayerManager {
     //region Getters and Setters
     public ArrayList<Player> getPlayers() {
         if (mPlayers == null) {
-            //TODO buscar players do JSON
+            //TODO Checar isso!
+            if (!JSON_FILE.exists()) {
+                mPlayers = new ArrayList<Player>();
+            } else {
+                try {
+                    mPlayers = new ObjectMapper().readValue(JSON_FILE, new TypeReference<List<Player>>() {});
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         return mPlayers;
@@ -45,8 +60,8 @@ public final class PlayerManager {
 
     //region Public methods
     public void savePlayer(Player player) {
-        if (player != null) {
-            // TODO salvar o player no JSON
+        if (player != null && getPlayers().contains(player)) {
+            savePlayers();
         }
     }
 
@@ -56,11 +71,17 @@ public final class PlayerManager {
 
     public void registerPlayer(Player player) {
         getPlayers().add(player);
-        //TODO apagar o json e salvar again
+        savePlayers();
     }
 
     public void deletePlayer(Player player) {
-        deletePlayer(player.getName());
+        if (player != null && getPlayers().size() > 0) {
+            if (getPlayers().remove(player)) {
+                savePlayers();
+            } else {
+                deletePlayer(player.getName());
+            }
+        }
     }
 
     public void deletePlayer(String name) {
@@ -72,8 +93,29 @@ public final class PlayerManager {
                     break;
                 }
             }
-            //TODO apagar o json e salvar again
+            savePlayers();
         }
+    }
+    //endregion
+
+    //region Private methods
+    public boolean savePlayers() {
+        ArrayList<Player> players = getPlayers();
+
+        if (JSON_FILE.exists() && !JSON_FILE.delete()) {
+            throw new RuntimeException("Não deletou o arquivo");
+        }
+
+        try {
+            if (JSON_FILE.createNewFile()) {
+                new ObjectMapper().writeValue(JSON_FILE, players);
+                return true;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return false;
     }
     //endregion
 }
