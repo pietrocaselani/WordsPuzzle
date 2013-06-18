@@ -1,8 +1,14 @@
 package com.pc.java.wordspuzzle.managers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pc.java.wordspuzzle.exceptions.InvalidWordException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Pietro Caselani
@@ -11,6 +17,7 @@ import java.util.ArrayList;
  */
 public final class WordManager {
     //region Fields
+    private static final File JSON_FILE = new File("words.json");
     private static WordManager sInstance;
     private ArrayList<String> mWords, mCurrentWords;
     //endregion
@@ -21,13 +28,25 @@ public final class WordManager {
         return sInstance;
     }
 
-    private WordManager() {}
+    private WordManager() {
+        try {
+            if (!JSON_FILE.exists() && !JSON_FILE.createNewFile()) {
+                throw new RuntimeException("Não criou o words.json");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     //endregion
 
     //region Getters and Setters
     public ArrayList<String> getWords() {
         if (mWords == null) {
-            //TODO buscar words do JSON
+            try {
+                mWords = new ObjectMapper().readValue(JSON_FILE, new TypeReference<List<String>>() {});
+            } catch (IOException e) {
+                mWords = new ArrayList<String>();
+            }
         }
 
         return mWords;
@@ -50,7 +69,7 @@ public final class WordManager {
         if (word.length() != 3 && word.length() != 4) throw new InvalidWordException();
 
         getWords().add(word);
-        //TODO apagar o json e salvar again
+        saveWords();
     }
 
     public void deleteWord(String word) {
@@ -62,7 +81,7 @@ public final class WordManager {
                     break;
                 }
             }
-            //TODO apagar o json e salvar again
+            saveWords();
         }
     }
 
@@ -70,6 +89,23 @@ public final class WordManager {
         ArrayList<String> words = getWords();
         for (String w : words) {
             if (w.equalsIgnoreCase(word)) return true;
+        }
+
+        return false;
+    }
+    //endregion
+
+    //region Private methods
+    private boolean saveWords() {
+        ArrayList<String> words = getWords();
+
+        try {
+            FileOutputStream fos = new FileOutputStream(JSON_FILE, false);
+            new ObjectMapper().writeValue(fos, words);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return false;

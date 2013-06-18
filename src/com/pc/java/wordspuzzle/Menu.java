@@ -90,18 +90,25 @@ public class Menu {
 
     private void startNewGame() {
         Utils.clearScreen();
-        System.out.print("1 - Single player;");
-        System.out.print("2 - Multi player;");
-        System.out.print("3 - Contra o computador;");
-
-        int op = mScanner.nextInt();
-        if (op == 1) {
-            newSingleGame();
-        } else if (op == 2 || op == 3) {
-            newMultiGame(op == 2);
+        if (WordManager.getInstance().getWords().size() < 4) {
+            String message = Utils.isWindows() ? "E" : "É";
+            System.out.print("\n\n******** " + message + " necessário cadastrar 4 palavras para começar! ********\n\n");
+            showGameMenu();
         } else {
-            Utils.clearScreen();
-            startNewGame();
+            System.out.println("1 - Single player;");
+            System.out.println("2 - Multi player;") ;
+            System.out.println("3 - Contra o computador;");
+            System.out.print("--> ");
+
+            int op = mScanner.nextInt();
+            if (op == 1) {
+                newSingleGame();
+            } else if (op == 2 || op == 3) {
+                newMultiGame(op == 2);
+            } else {
+                Utils.clearScreen();
+                startNewGame();
+            }
         }
     }
 
@@ -125,11 +132,12 @@ public class Menu {
     private Player getPlayer(String message) {
         ArrayList<Player> players = PlayerManager.getInstance().getPlayers();
         for (int i = 0 ; i < players.size(); i++) {
-            System.out.print(String.format("%d - %s", i + 1, players.get(i).getName()));
+            System.out.println(String.format("%d - %s", i + 1, players.get(i).getName()));
         }
 
         System.out.print(message);
         int index = mScanner.nextInt();
+        index --;
         if (index < 0 || index >= players.size()) {
             Utils.clearScreen();
             System.out.print("\n\n******** Digite um número válido! ********\n\n");
@@ -144,8 +152,8 @@ public class Menu {
         String word = mScanner.nextLine();
 
         String message = WordManager.getInstance().containsWord(word) ?
-                "foi encontrada" :  Utils.isWindows() ?
-                "nao foi encontrada" : "não foi encontada";
+                " foi encontrada" :  Utils.isWindows() ?
+                " nao foi encontrada" : " não foi encontada";
 
         System.out.print("A palavra " + word + message + "\n\n");
 
@@ -156,11 +164,12 @@ public class Menu {
         System.out.print("\n\nPalavras:\n");
         ArrayList<String> words = WordManager.getInstance().getWords();
         for (int i = 0 ; i < words.size(); i++) {
-            System.out.print(String.format("%d - %s", i + 1, words.get(i)));
+            System.out.println(String.format("%d - %s", i + 1, words.get(i)));
         }
 
         System.out.print("\n\nSelecione o número do jogador para excluir: ");
         int index = mScanner.nextInt();
+        index--;
         if (index < 0 || index >= words.size()) {
             Utils.clearScreen();
             System.out.print("\n\n******** Digite um número válido! ********\n\n");

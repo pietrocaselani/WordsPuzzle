@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pc.java.wordspuzzle.models.Player;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +29,25 @@ public final class PlayerManager {
         return sInstance;
     }
 
-    private PlayerManager() {}
+    private PlayerManager() {
+        try {
+            if (!JSON_FILE.exists() && !JSON_FILE.createNewFile()) {
+                throw new RuntimeException("Não criou o players.json");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
     //endregion
 
     //region Getters and Setters
     public ArrayList<Player> getPlayers() {
         if (mPlayers == null) {
-            //TODO Checar isso!
-            if (!JSON_FILE.exists()) {
+            try {
+                mPlayers = new ObjectMapper().readValue(JSON_FILE, new TypeReference<List<Player>>() {});
+            } catch (IOException e) {
                 mPlayers = new ArrayList<Player>();
-            } else {
-                try {
-                    mPlayers = new ObjectMapper().readValue(JSON_FILE, new TypeReference<List<Player>>() {});
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
 
@@ -102,20 +107,15 @@ public final class PlayerManager {
     public boolean savePlayers() {
         ArrayList<Player> players = getPlayers();
 
-        if (JSON_FILE.exists() && !JSON_FILE.delete()) {
-            throw new RuntimeException("Não deletou o arquivo");
-        }
-
         try {
-            if (JSON_FILE.createNewFile()) {
-                new ObjectMapper().writeValue(JSON_FILE, players);
-                return true;
-            }
-        } catch (IOException e) {
+            FileOutputStream fos = new FileOutputStream(JSON_FILE, false);
+            new ObjectMapper().writeValue(fos, players);
+            fos.flush();
+            fos.close();
+            return true;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return false;
     }
     //endregion
 }

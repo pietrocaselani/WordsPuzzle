@@ -41,7 +41,7 @@ public class Game {
 
         Utils.clearScreen();
 
-        String message = "Novo jogo com " + player1.getName() + " vs " + (player2 == null ? " PC " : player2.getName());
+        String message = "Novo jogo com " + player1.getName() + " vs " + (player2 == null ? "computador " : player2.getName());
 
         System.out.println(message);
     }
