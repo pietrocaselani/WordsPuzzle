@@ -137,7 +137,9 @@ public class Menu {
         GameMode gameMode;
 
         if (twoPlayers) {
-            player2 = getPlayer("\n\nSelecione o segundo jogador: ");
+            do {
+                player2 = getPlayer("\n\nSelecione o segundo jogador: ");
+            } while (player1 == player2);
             gameMode = GameMode.MULTI;
         } else {
             player2 = new Player("Computer");
@@ -157,7 +159,7 @@ public class Menu {
 
         System.out.print(message);
         int index = mScanner.nextInt();
-        index --;
+        index--;
         if (index < 0 || index >= players.size()) {
             Utils.clearScreen();
             System.out.print("\n\n******** Digite um número válido! ********\n\n");
