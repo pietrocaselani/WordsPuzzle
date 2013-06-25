@@ -1,11 +1,13 @@
 package com.pc.java.wordspuzzle.models;
 
+import java.util.Iterator;
+
 /**
  * Created by Pietro Caselani
  * On 18/06/13
  * WordsPuzzle
  */
-public class Matrix<T> {
+public class Matrix<T> implements Iterable<T> {
     //region Fields
     private Object[] mMatrix;
     private int mColumnCount, mRowCount;
@@ -58,4 +60,32 @@ public class Matrix<T> {
         mMatrix[index] = value;
     }
     //endregion
+
+    //region Iterable methods
+    @Override public Iterator<T> iterator() {
+        return new MatrixIteratorImpl();
+    }
+    //endregion
+
+    private class MatrixIteratorImpl implements Iterator<T> {
+        private final int mSize;
+        private int mIndex;
+
+        private MatrixIteratorImpl() {
+            mSize = mMatrix.length - 1;
+            mIndex = 0;
+        }
+
+        @Override public boolean hasNext() {
+            return mIndex < mSize;
+        }
+
+        @Override public T next() {
+            return getValue(mIndex++);
+        }
+
+        @Override public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
