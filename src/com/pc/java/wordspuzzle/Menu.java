@@ -122,8 +122,17 @@ public class Menu {
 
     private void newMultiGame(boolean twoPlayers) {
         Player player1 = getPlayer("\n\nSelecione o jogador: ");
-        Player player2 = twoPlayers ? getPlayer("\n\nSelecione o segundo jogador: ") : null;
-        GameMode gameMode = GameMode.MULTI;
+        Player player2;
+        GameMode gameMode;
+
+        if (twoPlayers) {
+            player2 = getPlayer("\n\nSelecione o segundo jogador: ");
+            gameMode = GameMode.MULTI;
+        } else {
+            player2 = new Player("Computer");
+            gameMode = GameMode.COMPUTER;
+        }
+
         ArrayList<String> gameWords = WordManager.getInstance().getGameWords();
 
         Game.getInstance().newGame(gameMode, player1, player2, gameWords);

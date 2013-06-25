@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Pietro Caselani
@@ -60,7 +61,20 @@ public final class WordManager {
 
     public ArrayList<String> getGameWords(boolean reset) {
         if (mCurrentWords == null || reset) {
-            //TODO pegar 3 palavras randomicas de 4 chars e 1 de um char
+            mCurrentWords = new ArrayList<String>(4);
+            Random random = new Random();
+            ArrayList<String> words = getWords();
+            int size = words.size();
+
+            while (mCurrentWords.size() < 3) {
+                String word = words.get(random.nextInt(size));
+                if (word.length() == 4 && !mCurrentWords.contains(word)) mCurrentWords.add(word);
+            }
+
+            while (mCurrentWords.size() < 4) {
+                String word = words.get(random.nextInt(size));
+                if (word.length() == 3 && !mCurrentWords.contains(word)) mCurrentWords.add(word);
+            }
         }
         return mCurrentWords;
     }
