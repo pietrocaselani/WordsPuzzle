@@ -51,45 +51,7 @@ public class Game {
         mGameMode = gameMode;
         mWords = words;
 
-        int size = 1;
-        for (String word : words) size += word.length();
-
-        ArrayList<Integer> pieces = new ArrayList<Integer>(size);
-
-        for (String word : words) {
-            int length = word.length();
-            for (int i = 0; i < length; i++) {
-                pieces.add((int) word.charAt(i));
-            }
-        }
-
-        pieces.add(EMPTY_INDEX);
-
-        Random random = new Random();
-        int fromIndex, toIndex, oldValue, newValue;
-
-        for (int i = 0; i < pieces.size() * 2; i++) {
-            fromIndex = random.nextInt(pieces.size());
-            toIndex = random.nextInt(pieces.size());
-
-            oldValue = pieces.get(fromIndex);
-            newValue = pieces.get(toIndex);
-
-            pieces.set(toIndex, oldValue);
-            pieces.set(fromIndex, newValue);
-        }
-
-        for (int i = 0; i < size; i++) {
-            mBoard.setValue(pieces.get(i), i);
-        }
-
-        if (mGameMode == MULTI || mGameMode == COMPUTER) {
-            //TODO não tem como fazer isso usando copy/clone??!!
-            mOtherBoard = new Matrix<Integer>(4, 4);
-            for (int i = 0; i < size; i++) {
-                mOtherBoard.setValue(mBoard.getValue(i), i);
-            }
-        }
+        shufflePeaces();
 
         mCurrentBoard = mBoard;
 
@@ -105,13 +67,20 @@ public class Game {
         PlayerManager pm = PlayerManager.getInstance();
         System.out.println("Jogadando: " + pm.getCurrentPlayer().getName());
 
-        if (isComputer()) {
+        int row, column;
+        boolean canMove;
 
+        if (isComputer()) {
+            Random random = new Random();
+
+            do {
+                row = random.nextInt(mCurrentBoard.getRowCount() - 1);
+                column = random.nextInt(mCurrentBoard.getColumnCount() - 1);
+
+                canMove = canMovePeace(row, column);
+            } while (!canMove);
         } else {
             Scanner scanner = new Scanner(System.in);
-
-            int row, column;
-            boolean canMove;
 
             do {
                 System.out.print("Digite a linha da peça que deseja mover: ");
@@ -124,18 +93,22 @@ public class Game {
 
                 canMove = canMovePeace(row, column);
             } while (!canMove);
+        }
 
-            int oldValue = mCurrentBoard.getValue(row, column);
-            int oldEmpty = getEmptyIndex();
-            mCurrentBoard.setValue(oldValue, oldEmpty);
-            mCurrentBoard.setValue(EMPTY_INDEX, row, column);
-            if (checkWin()) {
-                System.out.println("O jogador " + pm.getCurrentPlayer().getName() + " venceu!");
-            } else {
-                tooglePlayers();
-                drawBoard();
-                play();
-            }
+        int oldValue = mCurrentBoard.getValue(row, column);
+        int oldEmpty = getEmptyIndex();
+        mCurrentBoard.setValue(oldValue, oldEmpty);
+        mCurrentBoard.setValue(EMPTY_INDEX, row, column);
+        if (checkWin()) {
+            System.out.println("O jogador " + pm.getCurrentPlayer().getName() + " venceu!");
+            Player currentPlayer = pm.getCurrentPlayer();
+            currentPlayer.setPoints(currentPlayer.getPoints() + 1);
+            pm.savePlayer(currentPlayer);
+            Menu.showMenu();
+        } else {
+            tooglePlayers();
+            drawBoard();
+            play();
         }
     }
 
@@ -221,6 +194,49 @@ public class Game {
         }
 
         return win;
+    }
+
+    private void shufflePeaces() {
+        ArrayList<String> words = mWords;
+        ArrayList<Integer> pieces;
+        Random random = new Random();
+        int fromIndex, toIndex, oldValue, newValue, i, size = 1;
+
+        for (String word : words) size += word.length();
+
+        pieces = new ArrayList<Integer>(size);
+
+        for (String word : words) {
+            int length = word.length();
+            for (i = 0; i < length; i++) {
+                pieces.add((int) word.charAt(i));
+            }
+        }
+
+        pieces.add(EMPTY_INDEX);
+
+        for (i = 0; i < pieces.size() * 2; i++) {
+            fromIndex = random.nextInt(pieces.size());
+            toIndex = random.nextInt(pieces.size());
+
+            oldValue = pieces.get(fromIndex);
+            newValue = pieces.get(toIndex);
+
+            pieces.set(toIndex, oldValue);
+            pieces.set(fromIndex, newValue);
+        }
+
+        for (i = 0; i < size; i++) {
+            mBoard.setValue(pieces.get(i), i);
+        }
+
+        if (mGameMode == MULTI || mGameMode == COMPUTER) {
+            //TODO não tem como fazer isso usando copy/clone??!!
+            mOtherBoard = new Matrix<Integer>(4, 4);
+            for (i = 0; i < size; i++) {
+                mOtherBoard.setValue(mBoard.getValue(i), i);
+            }
+        }
     }
     //endregion
 
