@@ -83,6 +83,14 @@ public class Game {
             mBoard.setValue(pieces.get(i), i);
         }
 
+        if (mGameMode == MULTI || mGameMode == COMPUTER) {
+            //TODO não tem como fazer isso usando copy/clone??!!
+            mOtherBoard = new Matrix<Integer>(4, 4);
+            for (int i = 0; i < size; i++) {
+                mOtherBoard.setValue(mBoard.getValue(i), i);
+            }
+        }
+
         mCurrentBoard = mBoard;
 
         drawBoard();
@@ -101,18 +109,11 @@ public class Game {
 
         } else {
             Scanner scanner = new Scanner(System.in);
-            System.out.print("Digite a linha da peça que deseja mover: ");
-            int row = scanner.nextInt();
-            System.out.print("Digite a coluna da peça que deseja mover: ");
-            int column = scanner.nextInt();
 
-            column--;
-            row--;
+            int row, column;
+            boolean canMove;
 
-            boolean canMove = canMovePeace(row, column);
-
-            while (!canMove) {
-                System.out.print("\n\nDigite uma linha e coluna válida!\n\n");
+            do {
                 System.out.print("Digite a linha da peça que deseja mover: ");
                 row = scanner.nextInt();
                 System.out.print("Digite a coluna da peça que deseja mover: ");
@@ -122,7 +123,7 @@ public class Game {
                 row--;
 
                 canMove = canMovePeace(row, column);
-            }
+            } while (!canMove);
 
             int oldValue = mCurrentBoard.getValue(row, column);
             int oldEmpty = getEmptyIndex();
@@ -201,7 +202,6 @@ public class Game {
     }
 
     private boolean checkWin() {
-        //TODO gravar letras num array e verificar suas posições
         boolean win = true;
         int i, value, length, boardIndex = 0;
         char c;

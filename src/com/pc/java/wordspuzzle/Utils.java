@@ -8,9 +8,6 @@ import java.io.IOException;
  * WordsPuzzle
  */
 public final class Utils {
-    //region Fields
-    //endregion
-
     //region No instances
     private Utils() {}
     //endregion

@@ -53,6 +53,7 @@ public class Menu {
         System.out.println("6 - Excluir palavra;");
         System.out.println("7 - Pesquisar palavra;");
         System.out.println("8 - Novo jogo;");
+        System.out.println("9 - Limpar a tela;");
         System.out.print("Digite uma opção: ");
         int option = mScanner.nextInt();
         mScanner.nextLine();
@@ -81,6 +82,10 @@ public class Menu {
             case 8:
                 startNewGame();
                 break;
+            case 9:
+                Utils.clearScreen();
+                showGameMenu();
+                break;
             default:
                 Utils.clearScreen();
                 System.out.print("Digite uma opção válida!\n\n");
@@ -91,8 +96,8 @@ public class Menu {
     private void startNewGame() {
         Utils.clearScreen();
         if (WordManager.getInstance().getWords().size() < 4) {
-            String message = Utils.isWindows() ? "E" : "É";
-            System.out.print("\n\n******** " + message + " necessário cadastrar 4 palavras para começar! ********\n\n");
+            String message = Utils.isWindows() ? "E necessario" : "É necessário";
+            System.out.print("\n\n******** " + message + " cadastrar 4 palavras para começar! ********\n\n");
             showGameMenu();
         } else {
             System.out.println("1 - Single player;");
@@ -104,7 +109,13 @@ public class Menu {
             if (op == 1) {
                 newSingleGame();
             } else if (op == 2 || op == 3) {
-                newMultiGame(op == 2);
+                if (op == 2 && PlayerManager.getInstance().getPlayers().size() < 2) {
+                    String message = Utils.isWindows() ? "E necessario" : "É necessário";
+                    System.out.print("\n\n******** " + message + " ter 2 jogadores para começar! ********\n\n");
+                    showGameMenu();
+                } else {
+                    newMultiGame(op == 2);
+                }
             } else {
                 Utils.clearScreen();
                 startNewGame();
